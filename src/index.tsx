@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BackendService } from './backend';
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './app/app';
 
-const backend = new BackendService();
-
 ReactDOM.render(
   <React.StrictMode>
-    <App backend={backend} />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
