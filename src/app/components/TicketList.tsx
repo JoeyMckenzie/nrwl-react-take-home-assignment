@@ -1,48 +1,37 @@
-import { useEffect, useMemo, VFC } from 'react';
+import { useEffect, VFC } from 'react';
+import { mergeMap, take } from 'rxjs';
 import { useTicketsStore, useUsersStore } from '../lib/hooks';
-import TicketListItem from './TicketListItem';
+import TicketListItems from './TicketListItems';
 
 const TicketList: VFC = () => {
   const { loadingTickets, availableTickets, loadTickets } = useTicketsStore();
-  const { loadingUsers, loadUsers } = useUsersStore();
+  const { availableUsers, loadingUsers, loadUsers } = useUsersStore();
 
   useEffect(() => {
     if (availableTickets.length > 0) {
       return;
     }
 
-    const ticketsSubscription = loadTickets().subscribe(() =>
-      console.log('tickets loaded'),
-    );
-    const usersSubscription = loadUsers().subscribe(() =>
-      console.log('users loaded'),
-    );
-
-    return () => {
-      ticketsSubscription.unsubscribe();
-      usersSubscription.unsubscribe();
-    };
-  }, [availableTickets, loadTickets, loadUsers]);
-
-  const isLoading = useMemo(
-    () => (loadingTickets || loadingUsers).toString(),
-    [loadingUsers, loadingTickets],
-  );
+    loadTickets()
+      .pipe(
+        take(1),
+        mergeMap(() => loadUsers()),
+      )
+      .subscribe(() => 'tickets and users loaded');
+  }, [loadTickets, loadUsers, availableTickets]);
 
   return (
-    <div className="app">
+    <div className="ticket-list">
       <h2>Tickets</h2>
       <p>
-        <strong>Loading</strong>: {isLoading}
+        <strong>Loading</strong>: {(loadingTickets || loadingUsers).toString()}
       </p>
-      {availableTickets ? (
-        <ul>
-          {availableTickets.map((t) => (
-            <TicketListItem ticket={t} key={t.id} />
-          ))}
-        </ul>
+      {availableTickets.length > 0 && availableUsers.length > 0 ? (
+        <div data-testid="ticket-list-items">
+          <TicketListItems />
+        </div>
       ) : (
-        <span>...</span>
+        <span data-testid="loading-indicator">...</span>
       )}
     </div>
   );

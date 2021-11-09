@@ -4,7 +4,7 @@ import { devtools } from 'zustand/middleware';
 import { Ticket } from '..';
 import { BackendService } from '../../../backend';
 
-interface TicketsState {
+export interface TicketsState {
   availableTickets: Ticket[];
   filteredTickets: Ticket[];
   loadingTickets: boolean;

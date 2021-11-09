@@ -4,7 +4,7 @@ import { devtools } from 'zustand/middleware';
 import { User } from '..';
 import { BackendService } from '../../../backend';
 
-interface UsersState {
+export interface UsersState {
   availableUsers: User[];
   selectedUser?: User | null;
   loadingUsers: boolean;
